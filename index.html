@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>bdgt-ing</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+</head>
+<body>
+
+<!-- ONBOARDING -->
+<div id="onboarding">
+  <div class="ob-card">
+    <div class="ob-icon">🌿</div>
+    <div class="ob-logo">bdgt<span>-ing</span></div>
+    <div class="ob-tagline">teman budgeting kamu ✦</div>
+    <div class="ob-label">Kamu mau dipanggil apa?</div>
+    <input class="ob-input" id="ob-name" type="text" placeholder="Tulis namamu di sini..." maxlength="30" autocomplete="off">
+    <div class="ob-err" id="ob-err"></div>
+    <button class="ob-btn" onclick="startApp()">Mulai Budgeting →</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="app-header">
+    <div class="header-left">
+      <div class="greeting" id="greeting-text">Halo! 👋</div>
+      <div class="sub" id="greeting-date">teman budgeting kamu ✦</div>
+    </div>
+    <div class="header-right">
+      <div class="logo-badge">bdgt-ing</div>
+      <div class="period-nav">
+        <button class="pnav-btn" onclick="changeMonth(-1)" title="Bulan sebelumnya">‹</button>
+        <span class="pnav-label" id="disp-period"></span>
+        <button class="pnav-btn" onclick="changeMonth(1)" title="Bulan berikutnya">›</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PAGE: BERANDA ===== -->
+  <section class="page active" data-page="beranda">
+
+  <!-- MOTIVASI TICKER -->
+  <div class="motive-ticker-wrap">
+    <div class="motive-ticker" id="motive-ticker"></div>
+  </div>
+
+  <!-- AI SARAN KEUANGAN -->
+  <div class="ai-suggest-wrap">
+    <div class="ai-suggest-card">
+      <div class="ai-suggest-header" onclick="toggleAiPanel()">
+        <div class="ai-suggest-title">
+          <span>🤖</span>
+          <span>Analisis Keuanganku</span>
+          <span class="ai-badge">AI</span>
+        </div>
+        <span class="ai-suggest-chevron" id="ai-chevron">▾</span>
+      </div>
+      <div class="ai-suggest-body" id="ai-suggest-body">
+        <button class="ai-trigger-btn" id="ai-trigger-btn" onclick="runAiAnalysis()">
+          ✨ Analisa & Kasih Saran
+        </button>
+        <div id="ai-output"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUICK STATS STRIP -->
+  <div class="quick-strip">
+    <div class="qs-card">
+      <div class="qs-icon">📥</div>
+      <div class="qs-label">Pemasukan</div>
+      <div class="qs-val" id="qs-in">Rp 0</div>
+      <div class="qs-sub" id="qs-in-tx">0 transaksi</div>
+    </div>
+    <div class="qs-card">
+      <div class="qs-icon">📤</div>
+      <div class="qs-label">Pengeluaran</div>
+      <div class="qs-val" id="qs-out">Rp 0</div>
+      <div class="qs-sub" id="qs-out-tx">0 transaksi</div>
+    </div>
+    <div class="qs-card">
+      <div class="qs-icon">💰</div>
+      <div class="qs-label">Tabungan & Investasi</div>
+      <div class="qs-val" id="qs-save">Rp 0</div>
+      <div class="qs-sub" id="qs-save-pct">0% dari pemasukan</div>
+    </div>
+    <div class="qs-card">
+      <div class="qs-icon">📋</div>
+      <div class="qs-label">Total Transaksi</div>
+      <div class="qs-val" id="qs-total-tx">0</div>
+      <div class="qs-sub" id="qs-top-cat">—</div>
+    </div>
+  </div>
+
+  <!-- BALANCE -->
+  <div class="bal-section">
+    <div class="bal-row">
+      <div class="bal-card bal-card-in">
+        <div class="bal-tag bal-tag-in">↑ Pemasukan</div>
+        <div class="bal-amount" id="bal-in">Rp 0</div>
+        <div class="bal-sub" id="bal-in-sub">0 transaksi</div>
+      </div>
+      <div class="bal-card bal-card-out">
+        <div class="bal-tag bal-tag-out">↓ Pengeluaran</div>
+        <div class="bal-amount" id="bal-out">Rp 0</div>
+        <div class="bal-sub" id="bal-out-sub">0 transaksi</div>
+      </div>
+    </div>
+    <div class="bal-card bal-card-net">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+        <div>
+          <div class="bal-tag bal-tag-net">≡ Saldo Bersih</div>
+          <div class="bal-amount" id="bal-net" style="font-size:22px">Rp 0</div>
+          <div class="bal-sub">selisih pemasukan & pengeluaran bulan ini</div>
+        </div>
+        <div id="savings-rate-badge" style="display:none;padding:8px 14px;background:var(--green-bg);border:1px solid var(--green);border-radius:8px;text-align:center">
+          <div style="font-size:10px;color:var(--green);font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Savings Rate</div>
+          <div id="savings-rate-val" style="font-family:'DM Mono',monospace;font-size:20px;font-weight:600;color:var(--green)">0%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INSIGHT -->
+  <div class="insight-card" id="insight-card" style="display:none">
+    <div class="insight-icon" id="insight-icon">💡</div>
+    <div class="insight-text" id="insight-text">—</div>
+  </div>
+
+  <!-- WARNINGS -->
+  <div class="warn-box" id="warn-box">
+    <strong>⚠ Peringatan Anggaran:</strong>
+    <div id="warn-list" style="margin-top:4px"></div>
+  </div>
+
+  </section>
+  <!-- ===== /PAGE: BERANDA ===== -->
+
+  <!-- ===== PAGE: ANGGARAN ===== -->
+  <section class="page" data-page="anggaran">
+
+  <!-- ALOKASI ANGGARAN -->
+  <div class="section-card">
+    <div class="section-title">⊙ Alokasi Anggaran Pengeluaran</div>
+    <div class="section-hint">Atur target persentase tiap kategori dari total pemasukan. Total harus tepat 100%.</div>
+    <div class="alloc-grid" id="alloc-grid"></div>
+    <div class="alloc-total-row">
+      <span class="alloc-total-label">Total alokasi: <span id="alloc-total-val" class="alloc-total-val alloc-warn">0%</span></span>
+      <button class="alloc-save-btn" onclick="saveAlloc()"><span>Simpan Alokasi</span><span id="alloc-btn-icon">→</span></button>
+    </div>
+    <!-- ALLOC PIE — muncul setelah simpan -->
+    <div class="alloc-result" id="alloc-result" style="display:none">
+      <div class="alloc-pie-wrap">
+        <div class="alloc-pie-title">Distribusi Target</div>
+        <div style="position:relative;height:160px;width:100%"><canvas id="chart-alloc-pie"></canvas></div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">Rincian Alokasi</div>
+        <div class="alloc-legend" id="alloc-legend"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BUDGET BAR -->
+  <div class="section-card" id="budget-bar-section" style="display:none">
+    <div class="section-title">◈ Realisasi vs Target Anggaran</div>
+    <div class="section-hint">Seberapa jauh pengeluaran kamu dari target bulan ini.</div>
+    <div class="budget-bars" id="budget-bars"></div>
+  </div>
+
+  </section>
+  <!-- ===== /PAGE: ANGGARAN ===== -->
+
+  <!-- ADD FORM (modal di HP, inline di PC) -->
+  <div class="add-form" id="add-form">
+    <div class="sheet-handle"></div>
+    <div class="add-form-head">
+      <div class="section-title" style="margin-bottom:0">+ Catat Transaksi</div>
+      <button class="modal-close-btn" onclick="closeAddForm()" title="Tutup">✕</button>
+    </div>
+    <div class="add-form-grid">
+      <div class="form-field">
+        <span class="form-label">Tanggal</span>
+        <input type="date" id="inp-date" class="form-inp">
+      </div>
+      <div class="form-field">
+        <span class="form-label">Jenis</span>
+        <select id="inp-type" class="form-inp" onchange="updateCategoryOpts()">
+          <option value="pemasukan">↑ Pemasukan</option>
+          <option value="pengeluaran">↓ Pengeluaran</option>
+        </select>
+      </div>
+      <div class="form-field" id="cat-group" style="display:none">
+        <span class="form-label">Kategori</span>
+        <select id="inp-cat" class="form-inp" onchange="updateDetailOpts()"></select>
+      </div>
+      <div class="form-field">
+        <span class="form-label">Detail</span>
+        <select id="inp-detail" class="form-inp"></select>
+      </div>
+      <div class="form-field">
+        <span class="form-label">Nominal (Rp)</span>
+        <div style="position:relative">
+          <input type="text" id="inp-amount" class="form-inp" placeholder="0" inputmode="numeric" style="width:160px;padding-left:36px" oninput="formatAmountInput(this)">
+          <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--text3);font-family:'DM Mono',monospace;pointer-events:none">Rp</span>
+        </div>
+      </div>
+      <button class="btn-add" onclick="addEntry()">+ Tambah</button>
+    </div>
+  </div>
+
+  <!-- ===== PAGE: LEDGER ===== -->
+  <section class="page" data-page="ledger">
+
+  <div class="sec-hdr"><span class="sec-hdr-label">Ledger</span><div class="sec-hdr-line"></div><span class="sec-hdr-label" id="period-label2"></span></div>
+
+  <div class="last-tx-info" id="last-tx-info"></div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th style="width:90px">Tanggal</th>
+        <th style="width:90px">Jenis</th>
+        <th>Kategori</th>
+        <th>Detail</th>
+        <th style="width:130px;text-align:right">Nominal</th>
+        <th style="width:60px">Status</th>
+        <th style="width:36px"></th>
+      </tr></thead>
+      <tbody id="entry-tbody"></tbody>
+    </table>
+  </div>
+
+  </section>
+  <!-- ===== /PAGE: LEDGER ===== -->
+
+  <!-- ===== PAGE: GRAFIK ===== -->
+  <section class="page" data-page="grafik">
+
+  <div class="sec-hdr"><span class="sec-hdr-label">Analytics</span><div class="sec-hdr-line"></div></div>
+
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">Perbandingan vs Bulan Lalu</div>
+      <div style="position:relative;height:200px"><canvas id="chart-compare"></canvas></div>
+      <div class="legend">
+        <span class="leg-item"><span class="leg-dot" style="background:#5C715E"></span>Bulan Ini</span>
+        <span class="leg-item"><span class="leg-dot" style="background:#CDE3D6"></span>Bulan Lalu</span>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Distribusi Pengeluaran</div>
+      <div style="position:relative;height:200px"><canvas id="chart-pie"></canvas></div>
+    </div>
+  </div>
+
+  <div class="chart-card-wide">
+    <div class="chart-title">Tren Harian — Aliran Keuangan</div>
+    <div style="position:relative;height:180px"><canvas id="chart-line"></canvas></div>
+    <div class="legend">
+      <span class="leg-item"><span class="leg-dot" style="background:#3a7d5e"></span>Pemasukan</span>
+      <span class="leg-item"><span class="leg-dot" style="background:#b94040"></span>Pengeluaran</span>
+    </div>
+  </div>
+
+  </section>
+  <!-- ===== /PAGE: GRAFIK ===== -->
+
+  <div class="app-footer">bdgt-ing ✦ catat, pantau, hemat 🌿<button class="btn-reset" onclick="resetState()">Reset Data</button></div>
+</div>
+
+<!-- MOBILE ONLY: bottom nav, FAB, overlay -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeAddForm()"></div>
+<nav class="bottom-nav" id="bottom-nav">
+  <button class="nav-item active" data-target="beranda" onclick="showPage('beranda')">
+    <span class="nav-icon">🏠</span><span class="nav-label">Beranda</span>
+  </button>
+  <button class="nav-item" data-target="anggaran" onclick="showPage('anggaran')">
+    <span class="nav-icon">⊙</span><span class="nav-label">Anggaran</span>
+  </button>
+  <button class="fab-add" onclick="openAddForm()" title="Catat Transaksi">+</button>
+  <button class="nav-item" data-target="ledger" onclick="showPage('ledger')">
+    <span class="nav-icon">📋</span><span class="nav-label">Ledger</span>
+  </button>
+  <button class="nav-item" data-target="grafik" onclick="showPage('grafik')">
+    <span class="nav-icon">📊</span><span class="nav-label">Grafik</span>
+  </button>
+</nav>
+
+<script src="script.js"></script>
+</body>
+</html>
