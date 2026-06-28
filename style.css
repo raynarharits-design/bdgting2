@@ -385,7 +385,7 @@ tr:hover td{background:var(--bg);transition:background 0.15s}
     max-height:82vh;overflow-y:auto;
     transform:translateY(110%);
     transition:transform 0.3s cubic-bezier(.32,.72,0,1);
-    z-index:1000;
+    z-index:1002;
     padding-bottom:calc(20px + env(safe-area-inset-bottom));
   }
   .add-form.modal-open{transform:translateY(0)}
